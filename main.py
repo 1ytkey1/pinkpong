@@ -2,6 +2,14 @@ from typing import Any
 from pygame import*
 init()
 
+W = 800
+H = 500
+
+window = display.set_mode((W, H))
+display.set_caption('Pingpong')
+display.set_icon(image.load('tenis_ball.png'))
+
+back = (200, 69, 20)
 
 font.init()
 f1 = font.SysFont(None, 70, bold=True)
@@ -39,4 +47,42 @@ class Player(GameSprite):
         if key_pressed[K_DOWN] and self.rect.y < H-self.size_y:
             self.rect.y += self.speed
 
+racket1 = Player('racket.png', 15, H/4, 50, 150, 5)
+racket2 = Player('racket.png', W-65, H/2, 50, 150, 5)
+ball = GameSprite('tenis_ball.png', W/2, H/2, 50, 50, 6)
 
+finish = False
+game = True
+speed_x = 4
+speed_y = 4
+
+while game:
+    window.fill(back)
+    time.delay(5)
+    for e in event.get():
+        if e.type == QUIT:
+            game = False
+    if not finish:
+        racket1.reset()
+        racket2.reset()
+        racket1.update_l()
+        racket2.update_r()
+        ball.reset()
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+        if ball.rect.y <= 0:
+            speed_y *= -1
+        if ball.rect.y >= H-50:
+            speed_y *= -1
+        if sprite.collide_rect(racket1, ball):
+            speed_x *= -1
+        if sprite.collide_rect(racket2, ball):
+            speed_x *= -1  
+        if ball.rect.x <= 0:
+            ball.rect.x = W/2
+            ball.rect.y = H/2
+        if ball.rect.x >= W-50:
+            ball.rect.x = W/2
+            ball.rect.y = H/2
+
+    display.update() 
